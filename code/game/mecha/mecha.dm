@@ -1494,17 +1494,18 @@
 /obj/mecha/Topic(href, href_list)
 	..()
 	if(href_list["update_content"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		send_byjax(src.occupant,"exosuit.browser","content",src.get_stats_part())
 		return
 	if(href_list["close"])
 		return
 	if(usr.stat > 0)
 		return
-	var/datum/topic_input/filter = new /datum/topic_input(href,href_list)
+	var/datum/topic_input/Filter = new /datum/topic_input(href,href_list)
 	if(href_list["select_equip"])
 		if(usr != src.occupant)	return
-		var/obj/item/mecha_parts/mecha_equipment/equip = filter.getObj("select_equip")
+		var/obj/item/mecha_parts/mecha_equipment/equip = Filter.getObj("select_equip")
 		if(equip)
 			src.selected = equip
 			src.occupant_message("You switch to [equip]")
@@ -1512,50 +1513,60 @@
 			send_byjax(src.occupant,"exosuit.browser","eq_list",src.get_equipment_list())
 		return
 	if(href_list["eject"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.eject()
 		return
 	if(href_list["toggle_lights"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.toggle_lights()
 		return
 	if(href_list["toggle_airtank"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.toggle_internal_tank()
 		return
 	if(href_list["rmictoggle"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		radio.broadcasting = !radio.broadcasting
 		send_byjax(src.occupant,"exosuit.browser","rmicstate",(radio.broadcasting?"Engaged":"Disengaged"))
 		return
 	if(href_list["rspktoggle"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		radio.listening = !radio.listening
 		send_byjax(src.occupant,"exosuit.browser","rspkstate",(radio.listening?"Engaged":"Disengaged"))
 		return
 	if(href_list["rfreq"])
-		if(usr != src.occupant)	return
-		var/new_frequency = (radio.frequency + filter.getNum("rfreq"))
+		if(usr != src.occupant)
+			return
+		var/new_frequency = (radio.frequency + Filter.getNum("rfreq"))
 		if (!radio.freerange || (radio.frequency < 1200 || radio.frequency > 1600))
 			new_frequency = sanitize_frequency(new_frequency)
 		radio.set_frequency(new_frequency)
 		send_byjax(src.occupant,"exosuit.browser","rfreq","[format_frequency(radio.frequency)]")
 		return
 	if(href_list["port_disconnect"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.disconnect_from_port()
 		return
 	if (href_list["port_connect"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.connect_to_port()
 		return
 	if (href_list["view_log"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.occupant << browse(src.get_log_html(), "window=exosuit_log")
 		onclose(occupant, "exosuit_log")
 		return
 	if (href_list["change_name"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		var/newname = strip_html_simple(input(occupant,"Choose new exosuit name","Rename exosuit",initial(name)) as text, MAX_NAME_LEN)
 		if(newname && trim(newname))
 			name = newname
@@ -1563,12 +1574,14 @@
 			alert(occupant, "nope.avi")
 		return
 	if (href_list["toggle_id_upload"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		add_req_access = !add_req_access
 		send_byjax(src.occupant,"exosuit.browser","t_id_upload","[add_req_access?"L":"Unl"]ock ID upload panel")
 		return
 	if(href_list["toggle_maint_access"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		if(state)
 			occupant_message("<font color='red'>Maintenance protocols in effect</font>")
 			return
@@ -1576,12 +1589,14 @@
 		send_byjax(src.occupant,"exosuit.browser","t_maint_access","[maint_access?"Forbid":"Permit"] maintenance protocols")
 		return
 	if(href_list["req_access"] && add_req_access)
-		if(!in_range(src, usr))	return
-		output_access_dialog(filter.getObj("id_card"),filter.getMob("user"))
+		if(!in_range(src, usr))
+			return
+		output_access_dialog(Filter.getObj("id_card"), Filter.getMob("user"))
 		return
 	if(href_list["maint_access"] && maint_access)
-		if(!in_range(src, usr))	return
-		var/mob/user = filter.getMob("user")
+		if(!in_range(src, usr))
+			return
+		var/mob/user = Filter.getMob("user")
 		if(user)
 			if(state==0)
 				state = 1
@@ -1589,18 +1604,19 @@
 			else if(state==1)
 				state = 0
 				user << "The securing bolts are now hidden."
-			output_maintenance_dialog(filter.getObj("id_card"),user)
+			output_maintenance_dialog(Filter.getObj("id_card"), user)
 		return
 	if(href_list["set_internal_tank_valve"] && state >=1)
-		if(!in_range(src, usr))	return
-		var/mob/user = filter.getMob("user")
+		if(!in_range(src, usr))
+			return
+		var/mob/user = Filter.getMob("user")
 		if(user)
 			var/new_pressure = input(user,"Input new output pressure","Pressure setting",internal_tank_valve) as num
 			if(new_pressure)
 				internal_tank_valve = new_pressure
 				user << "The internal pressure valve has been set to [internal_tank_valve]kPa."
 	if(href_list["remove_passenger"] && state >= 1)
-		var/mob/user = filter.getMob("user")
+		var/mob/user = Filter.getMob("user")
 		var/list/passengers = list()
 		for (var/obj/item/mecha_parts/mecha_equipment/tool/passenger/P in contents)
 			if (P.occupant)
@@ -1626,24 +1642,28 @@
 		P.go_out()
 		P.log_message("[occupant] was removed.")
 		return
-	if(href_list["add_req_access"] && add_req_access && filter.getObj("id_card"))
-		if(!in_range(src, usr))	return
-		operation_req_access += filter.getNum("add_req_access")
-		output_access_dialog(filter.getObj("id_card"),filter.getMob("user"))
+	if(href_list["add_req_access"] && add_req_access && Filter.getObj("id_card"))
+		if(!in_range(src, usr))
+			return
+		operation_req_access += Filter.getNum("add_req_access")
+		output_access_dialog(Filter.getObj("id_card"),Filter.getMob("user"))
 		return
-	if(href_list["del_req_access"] && add_req_access && filter.getObj("id_card"))
-		if(!in_range(src, usr))	return
-		operation_req_access -= filter.getNum("del_req_access")
-		output_access_dialog(filter.getObj("id_card"),filter.getMob("user"))
+	if(href_list["del_req_access"] && add_req_access && Filter.getObj("id_card"))
+		if(!in_range(src, usr))
+			return
+		operation_req_access -= Filter.getNum("del_req_access")
+		output_access_dialog(Filter.getObj("id_card"),Filter.getMob("user"))
 		return
 	if(href_list["finish_req_access"])
-		if(!in_range(src, usr))	return
+		if(!in_range(src, usr))
+			return
 		add_req_access = 0
-		var/mob/user = filter.getMob("user")
+		var/mob/user = Filter.getMob("user")
 		user << browse(null,"window=exosuit_add_access")
 		return
 	if(href_list["dna_lock"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		if(istype(occupant, /mob/living/carbon/brain))
 			occupant_message("You are a brain. No.")
 			return
@@ -1652,10 +1672,12 @@
 			src.occupant_message("You feel a prick as the needle takes your DNA sample.")
 		return
 	if(href_list["reset_dna"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.dna = null
 	if(href_list["repair_int_control_lost"])
-		if(usr != src.occupant)	return
+		if(usr != src.occupant)
+			return
 		src.occupant_message("Recalibrating coordination system.")
 		src.log_message("Recalibration of coordination system started.")
 		var/T = src.loc
