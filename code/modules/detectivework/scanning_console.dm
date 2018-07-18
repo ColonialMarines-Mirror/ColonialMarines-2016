@@ -9,7 +9,7 @@
 	var/obj/item/scanning
 	var/datum/data/record/forensic/current
 
-	var/list/filters = list()
+	var/list/Filters = list()
 	var/list/current_list = list()
 
 	var/list/files = list()
